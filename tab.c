@@ -1,7 +1,7 @@
 // Converts tabs to spaces
 // @tfpk
 // * Arguments:
-//     *  - File Name (required): Name of the file to be converted
+//     *  - File Names (required, any num of arguments): Name of the file(s) to be converted
 //     *  - Tab Width (-t): How many spaces per tab (default 4)
 // 2018-02-28
 
