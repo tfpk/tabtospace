@@ -1,5 +1,5 @@
-tabstospaces
-============
+tabstospace
+===========
 
 Basic Tab to Space converter.
 
@@ -13,8 +13,8 @@ Replaces tabs in those files with `n` times as many spaces
 
 ## Build
 
-    cd tabstospaces
+    cd tabstospace
     mkdir build && cd $_
     cmake ..
     make
-    ./tabstospaces
+    ./tabstospace

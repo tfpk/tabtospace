@@ -5,6 +5,12 @@
 //     *  - Tab Width (-t): How many spaces per tab (default 4)
 // 2018-02-28
 
+#ifdef _WIN32
+#define SEP '\\'
+#else
+#define SEP '/'
+#endif
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,7 +24,7 @@ char TAB_COMMAND = 't';
 int investigate[MAX_FILES];
 int num_spaces = 4;
 
-void help();
+void help(const char *, FILE*);
 int process_file(char*);
 
 int main(int argc, char** argv){
@@ -29,16 +35,17 @@ int main(int argc, char** argv){
 
     // At least one argument, and not more than the max amount of files
     if (argc == 1){
-        printf("No file provided!\n");
-        help();
-        return 1;
+        fprintf(stderr, "No file provided!\n");
+        help(strrchr(argv[0], SEP)+1, stderr);
+        return 2;
     } else if (argc > MAX_FILES){
-        printf("Maximum amount of files is %i!", MAX_FILES);
+        fprintf(stderr, "Maximum amount of files is %i!", MAX_FILES);
     }
 
     // search for -h
     for (i = 1; i < argc; i++){
         if (strcmp(argv[i], "-h") == 0 ||  strcmp(argv[i], "--help") == 0 ) {
+            help(strrchr(argv[0], SEP)+1, stdout);
             return 0;
         }
     }
@@ -55,11 +62,11 @@ int main(int argc, char** argv){
                 // skip the other part of the flag
                 i += 1;
             } else {
-                printf("Could not set tab length - is -t a positive number?!\n");
+                fprintf(stderr, "Could not set tab length - is -t a positive number?!\n");
                 return 1;
             }
         } else if (argv[i][0] == '-'){
-            printf("Option %s not recognised, or invalid!\n", argv[i]);
+            fprintf(stderr, "Option %s not recognised, or invalid!\n", argv[i]);
         } else{
             investigate[i] += 1;
         }
@@ -70,23 +77,24 @@ int main(int argc, char** argv){
             num_processed_files++;
             err = process_file(argv[i]);
             if (err != 0){
-                printf("File %s failed to convert.\n", argv[i]);
+                fprintf(stderr, "File %s failed to convert.\n", argv[i]);
             }
         }
     }
 
     if (!num_processed_files){
-        printf("No files were scanned. Did you mean to input a filename?\n");
+        fprintf(stderr, "No files were scanned. Did you mean to input a filename?\n");
     }
 
 }
 
-void help(){
+inline void help(const char *name, FILE *fh){
     // print basic help info
-    printf("Basic Tab to Space converter.\n");
-    printf("Usage:\n");
-    printf("Takes any number of file names, and an option `-t n`, where `n` is an integer specifying spaces per tab.\n");
-    printf("Replaces tabs in those files with `n` times as many spaces\n");
+    fprintf(fh,
+            "%s is a basic Tab to Space converter.\n"
+            "Usage:\n"
+            "Takes any number of file names, and an option `-t n`, where `n` is an integer specifying spaces per tab.\n"
+            "Replaces tabs in those files with `n` times as many spaces\n", name);
 }
 
 int process_file(char* file_name){
